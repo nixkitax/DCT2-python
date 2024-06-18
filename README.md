@@ -10,37 +10,21 @@ This project demonstrates image compression using the Discrete Cosine Transform 
 To ensure that you have all the necessary dependencies, a virtual environment should be created and activated before running the project. Follow these steps to set up your environment:
 
 1.  **Create a virtual environment**:
-    
-    bash
-    
-    Copia codice
-    
+       
     `python -m venv env` 
     
 2.  **Activate the virtual environment**:
     
     -   On Windows:
-        
-        bash
-        
-        Copia codice
-        
+                
         `.\env\Scripts\activate` 
         
     -   On macOS and Linux:
-        
-        bash
-        
-        Copia codice
-        
+                
         `source env/bin/activate` 
         
 3.  **Install the required packages**:
-    
-    bash
-    
-    Copia codice
-    
+        
     `pip install -r requirements.txt` 
     
 
