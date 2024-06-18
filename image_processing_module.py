@@ -1,6 +1,6 @@
-import numpy as np
 from PIL import Image, ImageOps
-from dct_functions import dct2, idct2
+import numpy as np
+import os
 
 def process_image(file_path, F, d):
     try:
@@ -29,6 +29,7 @@ def matrix_to_image(matrix):
     return Image.fromarray(np.uint8(normalized_matrix))
 
 def apply_dct_and_idct(matrix, F, d):
+    from dct_module import dct2, idct2
     height, width = matrix.shape
     compressed_matrix = np.zeros_like(matrix)
 
@@ -50,3 +51,11 @@ def filter_frequencies(matrix, d):
             if k + l >= d:
                 matrix[k, l] = 0
     return matrix
+
+def resize_image(image, max_width, max_height):
+    width, height = image.size
+    if width > max_width or height > max_height:
+        ratio = min(max_width / width, max_height / height)
+        new_size = (int(width * ratio), int(height * ratio))
+        image = image.resize(new_size)
+    return image

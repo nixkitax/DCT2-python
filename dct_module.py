@@ -1,9 +1,7 @@
 import numpy as np
+from scipy.fftpack import dct, idct
 import time
-import matplotlib.pyplot as plt
-import threading
 import queue
-from dct_functions import dct2, idct2
 
 def dct2_manual(matrix):
     N = matrix.shape[0]
@@ -33,10 +31,17 @@ def idct2_manual(matrix):
             result[x, y] = sum_val
     return result
 
+def dct2(matrix):
+    return dct(dct(matrix.T, norm='ortho').T, norm='ortho')
+
+def idct2(matrix):
+    return idct(idct(matrix.T, norm='ortho').T, norm='ortho')
+
 def compare_dct2_algorithms(progress_queue, plot_queue):
-    sizes = [8, 16, 32, 64]
+    sizes = [8, 16, 32]
     manual_times = []
     library_times = []
+    iterations = 10  # Numero di iterazioni per mediare i tempi
 
     total_steps = len(sizes) * 2
     step = 0
@@ -45,52 +50,24 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
         print("size: ", size)
         matrix = np.random.rand(size, size).astype(np.float32)
         
+        # Misurazione dei tempi per l'algoritmo manuale
         start_time = time.time()
-        dct2_manual(matrix)
-        manual_times.append(time.time() - start_time)
+        for _ in range(iterations):
+            dct2_manual(matrix)
+        manual_times.append((time.time() - start_time) / iterations)
         step += 1
         progress_queue.put((step / total_steps) * 100)
         
+        # Misurazione dei tempi per l'algoritmo della libreria
         start_time = time.time()
-        dct2(matrix)
-        library_times.append(time.time() - start_time)
+        for _ in range(iterations):
+            dct2(matrix)
+        library_times.append((time.time() - start_time) / iterations)
         step += 1
         progress_queue.put((step / total_steps) * 100)
-    
+    print("Sizes: ", sizes)
+    print("Manual times: ", manual_times)
+    print("Library times: ", library_times)
+
     progress_queue.put("done")
     plot_queue.put((sizes, manual_times, library_times))
-
-def compare_dct2_algorithms_thread(progress_var, progress_bar, root):
-    progress_queue = queue.Queue()
-    plot_queue = queue.Queue()
-    threading.Thread(target=compare_dct2_algorithms, args=(progress_queue, plot_queue)).start()
-    root.after(100, check_progress, progress_queue, progress_var, progress_bar, root)
-    root.after(100, check_plot, plot_queue, root)
-
-def check_progress(progress_queue, progress_var, progress_bar, root):
-    try:
-        progress = progress_queue.get_nowait()
-        if progress == "done":
-            return
-        progress_var.set(progress)
-        progress_bar.update_idletasks()
-    except queue.Empty:
-        pass
-    root.after(100, check_progress, progress_queue, progress_var, progress_bar, root)
-
-def check_plot(plot_queue, root):
-    try:
-        plot_data = plot_queue.get_nowait()
-        sizes, manual_times, library_times = plot_data
-        
-        plt.figure()
-        plt.plot(sizes, manual_times, label='Manual DCT2 ', marker='o')
-        plt.plot(sizes, library_times, label='Library DCT2', marker='o')
-        plt.xlabel('Matrix size (N)')
-        plt.ylabel('Time (s)')
-        plt.yscale('log')
-        plt.legend()
-        plt.title('Comparison of DCT2 Algorithms')
-        plt.show()
-    except queue.Empty:
-        root.after(100, check_plot, plot_queue, root)
