@@ -40,7 +40,7 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
     sizes = [8, 16, 32]
     manual_times = []
     library_times = []
-    iterations = 10  # Numero di iterazioni per mediare i tempi
+    iterations = 10  
 
     total_steps = len(sizes) * 2
     step = 0
@@ -49,7 +49,6 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
         print("size: ", size)
         matrix = np.random.rand(size, size).astype(np.float32)
         
-        # Misurazione dei tempi per l'algoritmo manuale
         start_time = time.perf_counter()
         for _ in range(iterations):
             dct2_manual(matrix)
@@ -59,7 +58,6 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
         step += 1
         progress_queue.put((step / total_steps) * 100)
         
-        # Misurazione dei tempi per l'algoritmo della libreria
         start_time = time.perf_counter()
         for _ in range(iterations):
             dct2(matrix)
@@ -75,3 +73,4 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
 
     progress_queue.put("done")
     plot_queue.put((sizes, manual_times, library_times))
+
