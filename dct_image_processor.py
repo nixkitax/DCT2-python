@@ -1,7 +1,7 @@
-#TODO: Dividere in moduli, testare scaling algoritmo
-
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+import sv_ttk
+
 from PIL import Image, ImageOps, ImageTk
 import numpy as np
 import time
@@ -10,8 +10,6 @@ import os
 from scipy.fftpack import dct, idct
 import threading
 import queue
-
-normalize_coefficients = False
 
 def dct2_manual(matrix):
     N = matrix.shape[0]
@@ -26,8 +24,6 @@ def dct2_manual(matrix):
             alpha_v = np.sqrt(1/N) if v == 0 else np.sqrt(2/N)
             result[u, v] = alpha_u * alpha_v * sum_val
     return result
-
-
 
 def idct2_manual(matrix):
     N = matrix.shape[0]
@@ -202,40 +198,32 @@ def resize_image(image, max_width, max_height):
         image = image.resize(new_size)
     return image
 
-def toggle_normalize():
-    global normalize_coefficients
-    normalize_coefficients = not normalize_coefficients
-    print("normalize_coefficients set to", normalize_coefficients)
-
 root = tk.Tk()
 root.title("Compressione di immagini tramite la DCT")
 
 root.geometry("800x600")
+sv_ttk.set_theme("dark")
 
-# Menu bar
 menu_bar = tk.Menu(root)
 root.config(menu=menu_bar)
 
-# Create a Notebook
 notebook = ttk.Notebook(root)
 notebook.pack(expand=True, fill='both')
 
-# Create frames for each tab
 dct_frame = ttk.Frame(notebook)
 hello_frame = ttk.Frame(notebook)
 
 notebook.add(dct_frame, text="DCT")
-notebook.add(hello_frame, text=("Comp"))
+notebook.add(hello_frame, text="Comp")
 
-f_entry = tk.Entry(dct_frame)
+f_entry = ttk.Entry(dct_frame)
 f_entry.insert(0, "10")
-d_entry = tk.Entry(dct_frame)
+d_entry = ttk.Entry(dct_frame)
 d_entry.insert(0, "7")
 
-normalize_button = tk.Checkbutton(dct_frame, text="“Normalizzare coefficenti DTC”", command=toggle_normalize)
-load_button = tk.Button(dct_frame, text="“Load .bmp image”", command=load_image)
-file_label = tk.Label(dct_frame, text="“Nessun file selezionato”")
-compression_label = tk.Label(dct_frame, text="””")
+load_button = ttk.Button(dct_frame, text="Load .bmp image", command=load_image)
+file_label = ttk.Label(dct_frame, text="Nessun file selezionato")
+compression_label = ttk.Label(dct_frame, text="")
 
 image_frame = tk.Frame(dct_frame)
 image_frame.pack()
@@ -244,7 +232,6 @@ img_label = tk.Label(image_frame)
 compressed_img_label = tk.Label(image_frame)
 f_entry.pack()
 d_entry.pack()
-normalize_button.pack()
 load_button.pack()
 file_label.pack()
 compression_label.pack()
@@ -255,7 +242,7 @@ progress_var = tk.DoubleVar()
 progress_bar = ttk.Progressbar(hello_frame, variable=progress_var, maximum=100)
 progress_bar.pack(pady=10)
 
-compare_button = tk.Button(hello_frame, text="“Compare DCT2 Algorithms”", command=lambda: compare_dct2_algorithms_thread(progress_var, progress_bar))
+compare_button = tk.Button(hello_frame, text="Compare DCT2 Algorithms", command=lambda: compare_dct2_algorithms_thread(progress_var, progress_bar))
 compare_button.pack()
 
 root.mainloop()
