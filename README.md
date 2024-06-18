@@ -83,7 +83,7 @@ The project is divided into several modules to organize the code effectively:
     
     Copia codice
     
-    `python main.py` 
+    `python dct_image_processor.py` 
     
 2.  **Load an Image**:
     
