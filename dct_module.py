@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.fftpack import dct, idct
 import time
-import queue
 
 def dct2_manual(matrix):
     N = matrix.shape[0]
@@ -51,20 +50,25 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
         matrix = np.random.rand(size, size).astype(np.float32)
         
         # Misurazione dei tempi per l'algoritmo manuale
-        start_time = time.time()
+        start_time = time.perf_counter()
         for _ in range(iterations):
             dct2_manual(matrix)
-        manual_times.append((time.time() - start_time) / iterations)
+        manual_time = (time.perf_counter() - start_time) / iterations
+        manual_times.append(manual_time)
+        print(f"Manual DCT2 (size={size}): {manual_time:.6f} seconds")
         step += 1
         progress_queue.put((step / total_steps) * 100)
         
         # Misurazione dei tempi per l'algoritmo della libreria
-        start_time = time.time()
+        start_time = time.perf_counter()
         for _ in range(iterations):
             dct2(matrix)
-        library_times.append((time.time() - start_time) / iterations)
+        library_time = (time.perf_counter() - start_time) / iterations
+        library_times.append(library_time)
+        print(f"Library DCT2 (size={size}): {library_time:.6f} seconds")
         step += 1
         progress_queue.put((step / total_steps) * 100)
+        
     print("Sizes: ", sizes)
     print("Manual times: ", manual_times)
     print("Library times: ", library_times)
