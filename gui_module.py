@@ -10,6 +10,9 @@ import queue
 import matplotlib.pyplot as plt
 from dct_module import compare_dct2_algorithms
 
+import sv_ttk
+
+
 def load_image():
     file_path = filedialog.askopenfilename(filetypes=[("BMP files", "*.bmp")])
     if not file_path:
@@ -112,17 +115,17 @@ notebook = ttk.Notebook(root)
 notebook.pack(expand=True, fill='both')
 
 dct_frame = ttk.Frame(notebook)
-hello_frame = ttk.Frame(notebook)
+comp_frame = ttk.Frame(notebook)
 
 notebook.add(dct_frame, text="DCT")
-notebook.add(hello_frame, text="Comp")
+notebook.add(comp_frame, text="Comp")
 
 f_entry = tk.Entry(dct_frame)
 f_entry.insert(0, "10")
 d_entry = tk.Entry(dct_frame)
 d_entry.insert(0, "7")
 
-load_button = tk.Button(dct_frame, text="Load .bmp image", command=load_image)
+load_button = ttk.Button(dct_frame, text="Load .bmp image", command=load_image)
 file_label = tk.Label(dct_frame, text="Nessun file selezionato")
 compression_label = tk.Label(dct_frame, text="")
 
@@ -131,23 +134,28 @@ image_frame.pack()
 
 img_label = tk.Label(image_frame)
 compressed_img_label = tk.Label(image_frame)
-f_entry.pack()
-d_entry.pack()
-load_button.pack()
-file_label.pack()
-compression_label.pack()
+f_entry.pack(pady=10)
+d_entry.pack(pady=10)
+load_button.pack(pady=10)
+file_label.pack(pady=10)
+compression_label.pack(pady=10)
 img_label.pack(side=tk.LEFT)
 compressed_img_label.pack(side=tk.LEFT)
 
+file_label = tk.Label(comp_frame, text="Click below to generate a comparison between the library DTC2 and the manually implemented version!")
+file_label.pack(pady=10)
+
+
+compare_button = ttk.Button(comp_frame, text="Compare DCT2 Algorithms", command=lambda: compare_dct2_algorithms_thread(progress_var, progress_bar))
+compare_button.pack(pady=10)
+
 progress_var = tk.DoubleVar()
-progress_bar = ttk.Progressbar(hello_frame, variable=progress_var, maximum=100)
-progress_bar.pack(pady=10)
+progress_bar = ttk.Progressbar(comp_frame, variable=progress_var, maximum=100)
+progress_bar.pack()
 
-compare_button = tk.Button(hello_frame, text="Compare DCT2 Algorithms", command=lambda: compare_dct2_algorithms_thread(progress_var, progress_bar))
-compare_button.pack()
 
-# Add the new button for testing DCT2
-test_dct_button = tk.Button(dct_frame, text="Test DCT2", command=test_dct2)
+test_dct_button = ttk.Button(dct_frame, text="Test DCT2 (in terminal)", command=test_dct2)
 test_dct_button.pack(pady=10)
 
+sv_ttk.set_theme("dark")
 root.mainloop()
