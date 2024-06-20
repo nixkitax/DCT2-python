@@ -8,7 +8,7 @@ from image_processing_module import process_image, resize_image
 import threading
 import queue
 import matplotlib.pyplot as plt
-from dct_module import compare_dct2_algorithms
+from dct_module import compare_dct2_algorithms, dct2_manual
 
 def load_image():
     file_path = filedialog.askopenfilename(filetypes=[("BMP files", "*.bmp")])
@@ -28,6 +28,10 @@ def load_image():
     try:
         F = int(f_entry.get() or 10)
         d = int(d_entry.get() or 7)
+
+        if d > 2 * F - 2:
+            messagebox.showerror("Error", f"Invalid value for d. It should be at most 2F-2 ({2*F-2}).")
+            return
     except ValueError:
         messagebox.showerror("Error", "Invalid F or d value")
         return
@@ -37,8 +41,8 @@ def load_image():
     if compressed_file_path:
         compressed_size = os.path.getsize(compressed_file_path)
         compression_ratio = 100 * (original_size - compressed_size) / original_size
-        compression_label.configure(text=f"Dimensione originale: {original_size} bytes = {round(original_size / (1024 * 1024), 2) } MB\n"
-                                      f"Dimensione compressa: {compressed_size} bytes = {round(compressed_size / (1024 * 1024), 2) }MB\n"
+        compression_label.configure(text=f"Dimensione originale: {original_size} bytes = {round(original_size / (1024 * 1024), 4) } MB\n"
+                                      f"Dimensione compressa: {compressed_size} bytes = {round(compressed_size / (1024 * 1024), 4) }MB\n"
                                       f"Compressione: {compression_ratio:.2f}%")
 
         compressed_image = Image.open(compressed_file_path)
@@ -103,9 +107,13 @@ def test_dct2():
     ], dtype=np.float32)
 
     result_dct2 = dct2(test_matrix)
+    result_manualdct2 = dct2_manual(test_matrix)
 
     print("Result of dct2:")
     print(result_dct2)
+    print("Result of the implemented dct2 :")
+    print(result_manualdct2)
+
 
 def dct2(matrix):
     return dct(dct(matrix.T, norm='ortho').T, norm='ortho')
@@ -129,10 +137,17 @@ comp_frame = tabview.tab("Comp")
 resolution_label = ctk.CTkLabel(dct_frame, text="")
 resolution_label.pack(pady=10)
 
+f_label = ctk.CTkLabel(dct_frame, text="Valore di F:")
+f_label.pack(pady=5)
 f_entry = ctk.CTkEntry(dct_frame)
 f_entry.insert(0, "10")
+f_entry.pack(pady=5)
+
+d_label = ctk.CTkLabel(dct_frame, text="Valore di d:")
+d_label.pack(pady=5)
 d_entry = ctk.CTkEntry(dct_frame)
 d_entry.insert(0, "7")
+d_entry.pack(pady=5)
 
 load_button = ctk.CTkButton(dct_frame, text="Load .bmp image", command=load_image)
 file_label = ctk.CTkLabel(dct_frame, text="Nessun file selezionato")
@@ -143,8 +158,6 @@ image_frame.pack()
 
 img_label = ctk.CTkLabel(image_frame, text="")
 compressed_img_label = ctk.CTkLabel(image_frame, text="")
-f_entry.pack(pady=10)
-d_entry.pack(pady=10)
 load_button.pack(pady=10)
 file_label.pack(pady=10)
 compression_label.pack(pady=10)

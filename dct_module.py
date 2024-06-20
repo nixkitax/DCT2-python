@@ -10,7 +10,8 @@ def dct2_manual(matrix):
             sum_val = 0
             for x in range(N):
                 for y in range(N):
-                    sum_val += matrix[x, y] * np.cos(np.pi * u * (2 * x + 1) / (2 * N)) * np.cos(np.pi * v * (2 * y + 1) / (2 * N))
+                    sum_val += matrix[x, y] * np.cos(np.pi * u * (2 * x + 1) / (2 * N)) * \
+                    np.cos(np.pi * v * (2 * y + 1) / (2 * N))
             alpha_u = np.sqrt(1/N) if u == 0 else np.sqrt(2/N)
             alpha_v = np.sqrt(1/N) if v == 0 else np.sqrt(2/N)
             result[u, v] = alpha_u * alpha_v * sum_val
@@ -26,7 +27,8 @@ def idct2_manual(matrix):
                 for v in range(N):
                     alpha_u = np.sqrt(1/N) if u == 0 else np.sqrt(2/N)
                     alpha_v = np.sqrt(1/N) if v == 0 else np.sqrt(2/N)
-                    sum_val += alpha_u * alpha_v * matrix[u, v] * np.cos(np.pi * u * (2 * x + 1) / (2 * N)) * np.cos(np.pi * v * (2 * y + 1) / (2 * N))
+                    sum_val += alpha_u * alpha_v * matrix[u, v] * np.cos(np.pi * u * \
+                    (2 * x + 1) / (2 * N)) * np.cos(np.pi * v * (2 * y + 1) / (2 * N))
             result[x, y] = sum_val
     return result
 
