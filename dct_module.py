@@ -49,8 +49,9 @@ def compare_dct2_algorithms(progress_queue, plot_queue):
     
     for size in sizes:
         print("size: ", size)
+        print("Generation nounces..")
         matrix = np.random.rand(size, size).astype(np.float32)
-        
+        print("Nounces generated..")
         start_time = time.perf_counter()
         for _ in range(iterations):
             dct2_manual(matrix)
